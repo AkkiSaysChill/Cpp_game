@@ -1,9 +1,13 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include "physics.h"
+#include <iostream>
 
+const int screenWidth = 640;
+const int screenHeight = 480;
 
-int WinMain(){
-        // Initialize SDL
+int WinMain(int argc, char* args[]) {
+    // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return 1;
@@ -14,8 +18,8 @@ int WinMain(){
         "Moving Red Circle",
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
-        640,
-        480,
+        screenWidth,
+        screenHeight,
         SDL_WINDOW_SHOWN
     );
 
@@ -33,10 +37,13 @@ int WinMain(){
     }
 
     // Circle properties
-    int circleX = 320; // Initial X position
-    int circleY = 240; // Initial Y position
+    int circleX = screenWidth / 2; // Initial X position (centered)
+    int circleY = screenHeight / 2; // Initial Y position (centered)
     int circleRadius = 20; // Circle radius
     Uint8 circleRed = 255; // Red color value
+
+    // Create a Physics object
+    Physics physics;
 
     // Main loop flag
     bool quit = false;
@@ -46,6 +53,9 @@ int WinMain(){
 
     // Main loop
     while (!quit) {
+        // Print debug information
+        std::cout << "circleX: " << circleX << " velocity: " << physics.getVelocity() << std::endl;
+
         // Handle events on the queue
         while (SDL_PollEvent(&e) != 0) {
             // User requests quit
@@ -57,16 +67,30 @@ int WinMain(){
             if (e.type == SDL_KEYDOWN) {
                 switch (e.key.keysym.sym) {
                     case SDLK_LEFT:
-                        // Move left and keep within window bounds
-                        circleX = std::max(circleX - 10, circleRadius);
+                        // Accelerate to the left
+                        physics.applyAcceleration(-0.1f);
                         break;
                     case SDLK_RIGHT:
-                        // Move right and keep within window bounds
-                        circleX = std::min(circleX + 10, 640 - circleRadius);
+                        // Accelerate to the right
+                        physics.applyAcceleration(0.1f);
+                        break;
+                }
+            }
+
+            // Handle key releases
+            if (e.type == SDL_KEYUP) {
+                switch (e.key.keysym.sym) {
+                    case SDLK_LEFT:
+                    case SDLK_RIGHT:
+                        // Decelerate (apply friction)
+                        physics.applyFriction(0.02f);
                         break;
                 }
             }
         }
+
+        // Update physics
+        physics.updatePosition(circleX, circleRadius, screenWidth - circleRadius);
 
         // Clear the screen
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -91,4 +115,3 @@ int WinMain(){
 
     return 0;
 }
-
