@@ -7,7 +7,6 @@
 #include <thread>
 
 
-
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 const int CIRCLE_RADIUS = 20;
@@ -22,7 +21,7 @@ void renderFillCircle(SDL_Renderer* renderer, int centerX, int centerY, int radi
 int WinMain() {
     SDL_Init(SDL_INIT_VIDEO);
 
-    SDL_Window* window = SDL_CreateWindow("Circle Gravity", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    SDL_Window* window = SDL_CreateWindow("game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     SDL_Event e;
@@ -39,26 +38,38 @@ int WinMain() {
             if (e.type == SDL_QUIT) {
                 quit = true;
             }
-            else if (e.type == SDL_KEYDOWN) {
+           else if (e.type == SDL_KEYDOWN) {
                 switch (e.key.keysym.sym) {
                     case SDLK_LEFT:
-                        // Move left
-                        circleX -= MOVEMENT_SPEED;
+                        // Apply leftward acceleration
+                        physics.applyAcceleration(-MOVEMENT_SPEED, 0.0f);
                         break;
                     case SDLK_RIGHT:
-                        // Move right
-                        circleX += MOVEMENT_SPEED;
-                        break;
+                        // Apply rightward acceleration
+                        physics.applyAcceleration(MOVEMENT_SPEED, 0.0f);
+                        break;                    
                     case SDLK_SPACE:
-                        // Start jumping
-                        if (!isJumping) {
-                            physics.setVelocityY(JUMP_VELOCITY);
-                            isJumping = true;
-                        }
+                        // Start jumping only when on the bottom
+                        std::cout << "Jumping! Y position: " << circleY << std::endl;
+                        physics.setVelocityY(JUMP_VELOCITY);
+
                         break;
                 }
             }
-        }
+            // Reset acceleration when the key is released
+            else if (e.type == SDL_KEYUP) {
+                switch (e.key.keysym.sym) {
+                    case SDLK_LEFT:
+                        // Apply rightward deceleration when left key is released
+                        physics.applyAcceleration(MOVEMENT_SPEED, 0.0f);
+                        break;
+                    case SDLK_RIGHT:
+                        // Apply leftward deceleration when right key is released
+                        physics.applyAcceleration(-MOVEMENT_SPEED, 0.0f);
+                        break;
+                }
+            }        }
+
 
         // Update physics and position
         physics.applyAcceleration(0.0f, GRAVITY);
