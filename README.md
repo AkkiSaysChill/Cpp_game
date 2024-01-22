@@ -18,4 +18,9 @@ Make sure you have SDL2 and SDL2_gfx installed on your system.
 ```bash
 sudo apt-get install libsdl2-dev
 sudo apt-get install libsdl2-gfx-dev
+```
 
+#### Build
+```bash
+ g++ main.cpp physics.cpp -o main -lSDL2 -lSDL2_gfx
+ ```
