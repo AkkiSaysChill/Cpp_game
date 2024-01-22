@@ -1,24 +1,61 @@
+
 #include "physics.h"
-#include <algorithm>
+#include <cmath>
 
-Physics::Physics() : velocity(0.0f) {}
+Physics::Physics() : velocityX(0.0f), velocityY(0.0f), posX(0.0f), posY(0.0f) {}
 
-void Physics::applyAcceleration(float acceleration) {
-    velocity += acceleration;
+float Physics::getVelocityX() const {
+    return velocityX;
 }
 
-void Physics::applyFriction(float friction) {
-    velocity *= (1.0f - friction);
+float Physics::getVelocityY() const {
+    return velocityY;
 }
 
-void Physics::updatePosition(int& position, int minPosition, int maxPosition) {
-    position += static_cast<int>(velocity);
-    position = std::max(position, minPosition);
-    position = std::min(position, maxPosition);
+void Physics::setVelocityX(float vx) {
+    velocityX = vx;
 }
 
-// Implement the getter method for velocity
-float Physics::getVelocity() const {
-    return velocity;
+void Physics::setVelocityY(float vy) {
+    velocityY = vy;
+}
+
+void Physics::resetVelocityX() {
+    velocityX = 0.0f;
+}
+
+void Physics::resetVelocityY() {
+    velocityY = 0.0f;
+}
+
+void Physics::applyAcceleration(float accelX, float accelY) {
+    velocityX += accelX;
+    velocityY += accelY;
+}
+
+void Physics::updatePosition(float& posX, float& posY, float radius, float maxX, float minX, float maxY, float minY) {
+    posX += velocityX;
+    posY += velocityY;
+
+    // Restrict the position within the boundaries
+    if (posX + radius > maxX) {
+        posX = maxX - radius;
+        resetVelocityX();  // Stop horizontal movement when hitting the right boundary
+    }
+
+    if (posX - radius < minX) {
+        posX = minX + radius;
+        resetVelocityX();  // Stop horizontal movement when hitting the left boundary
+    }
+
+    if (posY + radius > maxY) {
+        posY = maxY - radius;
+        resetVelocityY();  // Stop vertical movement when hitting the bottom boundary
+    }
+
+    if (posY - radius < minY) {
+        posY = minY + radius;
+        resetVelocityY();  // Stop vertical movement when hitting the top boundary
+    }
 }
 

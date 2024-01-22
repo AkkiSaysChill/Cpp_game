@@ -2,115 +2,91 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 #include "physics.h"
 #include <iostream>
+#include <cmath>
+#include <chrono>
+#include <thread>
 
-const int screenWidth = 640;
-const int screenHeight = 480;
 
-int WinMain(int argc, char* args[]) {
-    // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-        return 1;
-    }
 
-    // Create a window
-    SDL_Window* window = SDL_CreateWindow(
-        "Moving Red Circle",
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        screenWidth,
-        screenHeight,
-        SDL_WINDOW_SHOWN
-    );
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 600;
+const int CIRCLE_RADIUS = 20;
+const float GRAVITY = 0.5f;
+const float JUMP_VELOCITY = -10.0f;  // Negative velocity for jumping
+const float MOVEMENT_SPEED = 5.0f;    // Adjust this value based on your preference
 
-    if (window == nullptr) {
-        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-        return 1;
-    }
+void renderFillCircle(SDL_Renderer* renderer, int centerX, int centerY, int radius, SDL_Color color) {
+    filledCircleColor(renderer, centerX, centerY, radius, SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), color.r, color.g, color.b));
+}
 
-    // Create a renderer
+int WinMain() {
+    SDL_Init(SDL_INIT_VIDEO);
+
+    SDL_Window* window = SDL_CreateWindow("Circle Gravity", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-    if (renderer == nullptr) {
-        printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
-        return 1;
-    }
+    SDL_Event e;
+    bool quit = false;
+    bool isJumping = false;
 
-    // Circle properties
-    int circleX = screenWidth / 2; // Initial X position (centered)
-    int circleY = screenHeight / 2; // Initial Y position (centered)
-    int circleRadius = 20; // Circle radius
-    Uint8 circleRed = 255; // Red color value
+    float circleX = SCREEN_WIDTH / 2.0f;
+    float circleY = SCREEN_HEIGHT - CIRCLE_RADIUS;  // Set the initial position to the bottom
 
-    // Create a Physics object
     Physics physics;
 
-    // Main loop flag
-    bool quit = false;
-
-    // Event handler
-    SDL_Event e;
-
-    // Main loop
     while (!quit) {
-        // Print debug information
-        std::cout << "circleX: " << circleX << " velocity: " << physics.getVelocity() << std::endl;
-
-        // Handle events on the queue
         while (SDL_PollEvent(&e) != 0) {
-            // User requests quit
             if (e.type == SDL_QUIT) {
                 quit = true;
             }
-
-            // Handle key presses
-            if (e.type == SDL_KEYDOWN) {
+            else if (e.type == SDL_KEYDOWN) {
                 switch (e.key.keysym.sym) {
                     case SDLK_LEFT:
-                        // Accelerate to the left
-                        physics.applyAcceleration(-0.1f);
+                        // Move left
+                        circleX -= MOVEMENT_SPEED;
                         break;
                     case SDLK_RIGHT:
-                        // Accelerate to the right
-                        physics.applyAcceleration(0.1f);
+                        // Move right
+                        circleX += MOVEMENT_SPEED;
                         break;
-                }
-            }
-
-            // Handle key releases
-            if (e.type == SDL_KEYUP) {
-                switch (e.key.keysym.sym) {
-                    case SDLK_LEFT:
-                    case SDLK_RIGHT:
-                        // Decelerate (apply friction)
-                        physics.applyFriction(0.02f);
+                    case SDLK_SPACE:
+                        // Start jumping
+                        if (!isJumping) {
+                            physics.setVelocityY(JUMP_VELOCITY);
+                            isJumping = true;
+                        }
                         break;
                 }
             }
         }
 
-        // Update physics
-        physics.updatePosition(circleX, circleRadius, screenWidth - circleRadius);
+        // Update physics and position
+        physics.applyAcceleration(0.0f, GRAVITY);
+        physics.updatePosition(circleX, circleY, CIRCLE_RADIUS, SCREEN_WIDTH - CIRCLE_RADIUS, CIRCLE_RADIUS, SCREEN_HEIGHT - CIRCLE_RADIUS, CIRCLE_RADIUS);
 
-        // Clear the screen
+        // Check if the circle is on the ground
+        if (circleY >= SCREEN_HEIGHT - CIRCLE_RADIUS) {
+            isJumping = false;
+            circleY = SCREEN_HEIGHT - CIRCLE_RADIUS;
+            physics.resetVelocityY();
+        }
+
+        // Clear the renderer
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // Draw a filled red circle
-        filledCircleRGBA(renderer, circleX, circleY, circleRadius, circleRed, 0, 0, 255);
+        // Render the filled circle using SDL_gfx
+        renderFillCircle(renderer, static_cast<int>(circleX), static_cast<int>(circleY), CIRCLE_RADIUS, {255, 255, 255}); // White color
 
-        // Update the screen
+        // Present the renderer
         SDL_RenderPresent(renderer);
 
-        // Introduce a delay to control the speed of movement
-        SDL_Delay(10);
+        // Frame rate control
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));  // Cap the frame rate to approximately 60 FPS
     }
 
-    // Destroy window and renderer
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
-
-    // Quit SDL subsystems
     SDL_Quit();
 
     return 0;
