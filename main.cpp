@@ -55,8 +55,6 @@ int WinMain() {
                             physics.setVelocityY(JUMP_VELOCITY);
                             isJumping = true;
                             std::cout << "Jumping! Y position: " << circleY << std::endl; // Debugging print
-                        }else {
-                            isJumping = false;
                         }
                         break;
                 }
@@ -68,7 +66,11 @@ int WinMain() {
                     case SDLK_RIGHT:
                     physics.setVelocityX(0.0f);
                     break;
+                    case SDLK_SPACE:
+                    isJumping = false;
+                    break;
                 }
+
             }   
         }
 
@@ -78,11 +80,13 @@ int WinMain() {
         physics.updatePosition(circleX, circleY, CIRCLE_RADIUS, SCREEN_WIDTH - CIRCLE_RADIUS, CIRCLE_RADIUS, SCREEN_HEIGHT - CIRCLE_RADIUS, CIRCLE_RADIUS);
 
         // Check if the circle is on the ground
+        /*
         if (circleY >= SCREEN_HEIGHT - CIRCLE_RADIUS) {
             isJumping = false;
             circleY = SCREEN_HEIGHT - CIRCLE_RADIUS;
             physics.resetVelocityY();
         }
+        */
 
         // Clear the renderer
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
