@@ -38,37 +38,39 @@ int WinMain() {
             if (e.type == SDL_QUIT) {
                 quit = true;
             }
-           else if (e.type == SDL_KEYDOWN) {
+            else if (e.type == SDL_KEYDOWN) {
                 switch (e.key.keysym.sym) {
                     case SDLK_LEFT:
-                        // Apply leftward acceleration
-                        physics.applyAcceleration(-MOVEMENT_SPEED, 0.0f);
-                        break;
+                        // Set constant leftward velocity
+                        physics.setVelocityX(-MOVEMENT_SPEED);
+                      break;
                     case SDLK_RIGHT:
-                        // Apply rightward acceleration
-                        physics.applyAcceleration(MOVEMENT_SPEED, 0.0f);
-                        break;                    
+                         // Set constant rightward velocity
+                        physics.setVelocityX(MOVEMENT_SPEED);
+                        break;
                     case SDLK_SPACE:
-                        // Start jumping only when on the bottom
                         std::cout << "Jumping! Y position: " << circleY << std::endl;
-                        physics.setVelocityY(JUMP_VELOCITY);
-
+                        // Start jumping only when on the bottom
+                        if (!isJumping && circleY == 560) {
+                            physics.setVelocityY(JUMP_VELOCITY);
+                            isJumping = true;
+                            std::cout << "Jumping! Y position: " << circleY << std::endl; // Debugging print
+                        }else {
+                            isJumping = false;
+                        }
                         break;
                 }
             }
-            // Reset acceleration when the key is released
+            // Reset velocity when the key is released
             else if (e.type == SDL_KEYUP) {
                 switch (e.key.keysym.sym) {
                     case SDLK_LEFT:
-                        // Apply rightward deceleration when left key is released
-                        physics.applyAcceleration(MOVEMENT_SPEED, 0.0f);
-                        break;
                     case SDLK_RIGHT:
-                        // Apply leftward deceleration when right key is released
-                        physics.applyAcceleration(-MOVEMENT_SPEED, 0.0f);
-                        break;
+                    physics.setVelocityX(0.0f);
+                    break;
                 }
-            }        }
+            }   
+        }
 
 
         // Update physics and position
