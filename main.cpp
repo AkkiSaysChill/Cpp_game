@@ -13,6 +13,20 @@ const int CIRCLE_RADIUS = 20;
 const float GRAVITY = 0.5f;
 const float JUMP_VELOCITY = -10.0f;  // Negative velocity for jumping
 const float MOVEMENT_SPEED = 5.0f;    // Adjust this value based on your preference
+bool shooting = false;
+
+// bullet
+/*
+struct Projectile {
+    float x;
+    float y;
+    float velocityY;
+
+    Projectile(float startX, float startY, float initialVelocityY)
+        : x(startX), y(startY), velocityY(initialVelocityY) {}
+};
+*/
+
 
 void renderFillCircle(SDL_Renderer* renderer, int centerX, int centerY, int radius, SDL_Color color) {
     filledCircleColor(renderer, centerX, centerY, radius, SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), color.r, color.g, color.b));
@@ -31,7 +45,13 @@ int WinMain() {
     float circleX = SCREEN_WIDTH / 2.0f;
     float circleY = SCREEN_HEIGHT - CIRCLE_RADIUS;  // Set the initial position to the bottom
 
-    Physics physics;
+    Physics physics;   
+
+    // Projectile projectile(circleX, circleY);
+
+    // Frame rate variables
+    int frameCount = 0;
+    auto startTime = std::chrono::high_resolution_clock::now();
 
     while (!quit) {
         while (SDL_PollEvent(&e) != 0) {
@@ -57,6 +77,10 @@ int WinMain() {
                             std::cout << "Jumping! Y position: " << circleY << std::endl; // Debugging print
                         }
                         break;
+                    case SDLK_LCTRL:
+                        if(!shooting){
+                            shooting = true;
+                        }
                 }
             }
             // Reset velocity when the key is released
@@ -69,10 +93,22 @@ int WinMain() {
                     case SDLK_SPACE:
                     isJumping = false;
                     break;
+                    case SDLK_LCTRL:
+                        if (shooting) {
+                            shooting = false;
+                        }
                 }
 
             }   
+            if (shooting) {
+                std::cout << "pew";
+                // projectile.y += projectile.velocityY;
+
+                // Render the projectile
+                // renderFillCircle(renderer, static_cast<int>(projectile.x), static_cast<int>(projectile.y), 5, {255, 0, 0}); // Red color
+            }
         }
+    
 
 
         // Update physics and position
@@ -99,7 +135,22 @@ int WinMain() {
         SDL_RenderPresent(renderer);
 
         // Frame rate control
-        std::this_thread::sleep_for(std::chrono::milliseconds(16));  // Cap the frame rate to approximately 60 FPS
+        frameCount++;
+
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - startTime).count();
+
+        if (duration >= 1000) {
+            double fps = frameCount / (duration / 1000.0);
+            std::cout << "FPS: " << fps << std::endl;
+
+            // Reset frame count and start time for the next second
+            frameCount = 0;
+            startTime = std::chrono::high_resolution_clock::now();
+        }
+
+        // Frame rate control
+        std::this_thread::sleep_for(std::chrono::milliseconds(8));  // Cap the frame rate to approximately 60 FPS
     }
 
     SDL_DestroyRenderer(renderer);
