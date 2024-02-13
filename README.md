@@ -22,5 +22,5 @@ sudo apt-get install libsdl2-gfx-dev
 
 #### Build
 ```bash
- g++ main.cpp physics.cpp -o main -lSDL2 -lSDL2_gfx
+ g++ main.cpp physics.cpp enemy/Enemy.cpp -o main -lSDL2 -lSDL2_gfx
  ```
