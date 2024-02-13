@@ -5,7 +5,8 @@
 #include <cmath>
 #include <chrono>
 #include <thread>
-
+#include "enemy/Enemy.h"
+#include <vector>
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -13,20 +14,18 @@ const int CIRCLE_RADIUS = 20;
 const float GRAVITY = 0.5f;
 const float JUMP_VELOCITY = -10.0f;  // Negative velocity for jumping
 const float MOVEMENT_SPEED = 5.0f;    // Adjust this value based on your preference
+const float SHOOTING_SPEED = 10.0f;   // Adjust the shooting speed as needed
+
 bool shooting = false;
 
-// bullet
-/*
 struct Projectile {
     float x;
     float y;
     float velocityY;
+    bool active;
 
-    Projectile(float startX, float startY, float initialVelocityY)
-        : x(startX), y(startY), velocityY(initialVelocityY) {}
+    Projectile() : x(0.0f), y(0.0f), velocityY(0.0f), active(false) {}
 };
-*/
-
 
 void renderFillCircle(SDL_Renderer* renderer, int centerX, int centerY, int radius, SDL_Color color) {
     filledCircleColor(renderer, centerX, centerY, radius, SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), color.r, color.g, color.b));
@@ -45,9 +44,12 @@ int WinMain() {
     float circleX = SCREEN_WIDTH / 2.0f;
     float circleY = SCREEN_HEIGHT - CIRCLE_RADIUS;  // Set the initial position to the bottom
 
-    Physics physics;   
+    Physics physics;
 
-    // Projectile projectile(circleX, circleY);
+    Projectile projectile;
+
+    std::vector<Enemy> enemies;
+    enemies.push_back(Enemy(100, 100)); // Example enemy creation
 
     // Frame rate variables
     int frameCount = 0;
@@ -61,75 +63,87 @@ int WinMain() {
             else if (e.type == SDL_KEYDOWN) {
                 switch (e.key.keysym.sym) {
                     case SDLK_LEFT:
-                        // Set constant leftward velocity
+                        // Move left
                         physics.setVelocityX(-MOVEMENT_SPEED);
-                      break;
+                        break;
                     case SDLK_RIGHT:
-                         // Set constant rightward velocity
+                        // Move right
                         physics.setVelocityX(MOVEMENT_SPEED);
                         break;
                     case SDLK_SPACE:
                         std::cout << "Jumping! Y position: " << circleY << std::endl;
                         // Start jumping only when on the bottom
-                        if (!isJumping && circleY == 560) {
+                        if (!isJumping && circleY == 560 ) {
                             physics.setVelocityY(JUMP_VELOCITY);
                             isJumping = true;
-                            std::cout << "Jumping! Y position: " << circleY << std::endl; // Debugging print
                         }
                         break;
                     case SDLK_LCTRL:
-                        if(!shooting){
+                        // Start shooting
+                        if (!shooting) {
                             shooting = true;
+                            projectile.x = circleX;
+                            projectile.y = circleY;
+                            projectile.velocityY = -SHOOTING_SPEED; // Shoot upward
+                            projectile.active = true; // Activate the projectile
                         }
+                        break;
                 }
             }
-            // Reset velocity when the key is released
             else if (e.type == SDL_KEYUP) {
                 switch (e.key.keysym.sym) {
                     case SDLK_LEFT:
                     case SDLK_RIGHT:
-                    physics.setVelocityX(0.0f);
-                    break;
+                        // Stop horizontal movement when left or right key is released
+                        physics.setVelocityX(0.0f);
+                        break;
                     case SDLK_SPACE:
-                    isJumping = false;
-                    break;
+                        // Stop jumping when space key is released
+                        isJumping = false;
+                        break;
+                      /*  
                     case SDLK_LCTRL:
-                        if (shooting) {
-                            shooting = false;
-                        }
+                        // Stop shooting when Ctrl key is released
+                        shooting = false;
+                        // Deactivate the projectile
+                        projectile.active = false;
+                        break;
+                        */
                 }
-
-            }   
-            if (shooting) {
-                std::cout << "pew";
-                // projectile.y += projectile.velocityY;
-
-                // Render the projectile
-                // renderFillCircle(renderer, static_cast<int>(projectile.x), static_cast<int>(projectile.y), 5, {255, 0, 0}); // Red color
             }
         }
-    
-
 
         // Update physics and position
         physics.applyAcceleration(0.0f, GRAVITY);
         physics.updatePosition(circleX, circleY, CIRCLE_RADIUS, SCREEN_WIDTH - CIRCLE_RADIUS, CIRCLE_RADIUS, SCREEN_HEIGHT - CIRCLE_RADIUS, CIRCLE_RADIUS);
 
-        // Check if the circle is on the ground
-        /*
-        if (circleY >= SCREEN_HEIGHT - CIRCLE_RADIUS) {
-            isJumping = false;
-            circleY = SCREEN_HEIGHT - CIRCLE_RADIUS;
-            physics.resetVelocityY();
+        // Update projectile position if shooting
+        if (shooting && projectile.active) {
+            projectile.y += projectile.velocityY;
+
+            // Check if projectile is out of bounds
+            if (projectile.y < 0) {
+                shooting = false;
+                projectile.active = false;
+            }
         }
-        */
 
         // Clear the renderer
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // Render the filled circle using SDL_gfx
+        for (auto& enemy : enemies) {
+            enemy.update();
+            enemy.render(renderer);
+        }
+
+        // Render the filled circle for the player
         renderFillCircle(renderer, static_cast<int>(circleX), static_cast<int>(circleY), CIRCLE_RADIUS, {255, 255, 255}); // White color
+
+        // Render the projectile if shooting
+        if (shooting && projectile.active) {
+            renderFillCircle(renderer, static_cast<int>(projectile.x), static_cast<int>(projectile.y), 3, {255, 255, 88}); // Red color
+        }
 
         // Present the renderer
         SDL_RenderPresent(renderer);
@@ -149,8 +163,8 @@ int WinMain() {
             startTime = std::chrono::high_resolution_clock::now();
         }
 
-        // Frame rate control
-        std::this_thread::sleep_for(std::chrono::milliseconds(8));  // Cap the frame rate to approximately 60 FPS
+        // Cap the frame rate
+        std::this_thread::sleep_for(std::chrono::milliseconds(8));  // Cap the frame rate to approximately 120 FPS
     }
 
     SDL_DestroyRenderer(renderer);
