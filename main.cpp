@@ -125,8 +125,25 @@ int WinMain() {
             if (projectile.y < 0) {
                 shooting = false;
                 projectile.active = false;
+            } else {
+                // Check for collision with each enemy
+                for (auto& enemy : enemies) {
+                    float dx = projectile.x - enemy.getX();
+                    float dy = projectile.y - enemy.getY();
+                    float distance = std::sqrt(dx * dx + dy * dy);
+                    if (distance < CIRCLE_RADIUS + enemy.getRadius()) {
+                        // Handle collision
+                        enemy.hit();
+                        // Deactivate the projectile
+                        std::cout << "Ouch!";
+                        shooting = false;
+                        projectile.active = false;
+                        break; // Exit the loop since the projectile can only hit one enemy at a time
+                    }
+                }
             }
         }
+
 
         // Clear the renderer
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);

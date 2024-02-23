@@ -9,10 +9,16 @@ public:
 
     void update();
     void render(SDL_Renderer* renderer);
+    float getX() const;
+    float getY() const;
+    float getRadius() const;
+    float getHealth() const;
+    void hit(); // Function to handle when enemy is hit by a bullet
 
 private:
     float x, y;
+    const float radius = 20.0f; // Radius of the enemy
+    float health;
 };
 
 #endif // ENEMY_H
-
