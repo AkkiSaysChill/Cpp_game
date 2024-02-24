@@ -7,9 +7,6 @@ Welcome to my game development learning project! I am learning game development 
 
 
 
-
-
-
 ## Dependencies
 
 #### To build and run the game, you'll need to ensure the following dependencies are installed on your system:
