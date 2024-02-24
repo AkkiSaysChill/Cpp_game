@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include <SDL2/SDL_mixer.h>
 #include "physics.h"
 #include <iostream>
 #include <cmath>
@@ -37,6 +38,12 @@ int WinMain() {
     SDL_Window* window = SDL_CreateWindow("game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
+    // Initialize SDL_mixer
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        std::cerr << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << std::endl;
+        return 1;
+    }
+
     SDL_Event e;
     bool quit = false;
     bool isJumping = false;
@@ -50,6 +57,10 @@ int WinMain() {
 
     std::vector<Enemy> enemies;
     enemies.push_back(Enemy(100, 100)); // Example enemy creation
+
+    // Load sound effects
+    Mix_Chunk* fireSound = Mix_LoadWAV("src/shoot.wav"); // Load fire sound effect
+    Mix_Chunk* hitSound = Mix_LoadWAV("src/explode.wav"); // Load hit sound effect
 
     // Frame rate variables
     int frameCount = 0;
@@ -86,6 +97,7 @@ int WinMain() {
                             projectile.y = circleY;
                             projectile.velocityY = -SHOOTING_SPEED; // Shoot upward
                             projectile.active = true; // Activate the projectile
+                            Mix_PlayChannel(-1, fireSound, 0);
                         }
                         break;
                 }
@@ -138,6 +150,7 @@ int WinMain() {
                         std::cout << "Ouch!";
                         shooting = false;
                         projectile.active = false;
+                        Mix_PlayChannel(-1, hitSound, 0);
                         break; // Exit the loop since the projectile can only hit one enemy at a time
                     }
                 }
