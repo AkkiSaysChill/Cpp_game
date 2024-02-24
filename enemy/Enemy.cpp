@@ -1,11 +1,15 @@
 #include <iostream>
 #include "Enemy.h"
-#include <SDL2/SDL2_gfxPrimitives.h> // Include SDL2_gfx header for filledCircleColor
+#include <SDL2/SDL2_gfxPrimitives.h>
+#include <SDL2/SDL_mixer.h>
 
 Enemy::Enemy(float x, float y) : x(x), y(y) {}
 
 void Enemy::update() {
-    // Update enemy logic here
+    if(health <= -100) {
+        
+        destory();
+    }
 }
 
 void Enemy::render(SDL_Renderer* renderer) {
@@ -30,7 +34,16 @@ float Enemy::getHealth() const {
 }
 
 void Enemy::hit() {
-    health--;
+    health -= 20;
     std::cout << "Enemy health: " << health << std::endl;
     // You can add more logic here to handle the enemy being hit
 }
+
+void Enemy::destory() {
+    
+
+    Mix_Chunk* explode = Mix_LoadWAV("src/explode.wav");
+    Mix_PlayChannel(-1, explode, 0);
+    std::cout << "die" << std::endl;
+}
+

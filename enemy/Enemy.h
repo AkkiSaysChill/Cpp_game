@@ -14,6 +14,7 @@ public:
     float getRadius() const;
     float getHealth() const;
     void hit(); // Function to handle when enemy is hit by a bullet
+    void destory();
 
 private:
     float x, y;

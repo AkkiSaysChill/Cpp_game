@@ -60,7 +60,7 @@ int WinMain() {
 
     // Load sound effects
     Mix_Chunk* fireSound = Mix_LoadWAV("src/shoot.wav"); // Load fire sound effect
-    Mix_Chunk* hitSound = Mix_LoadWAV("src/explode.wav"); // Load hit sound effect
+    Mix_Chunk* hitSound = Mix_LoadWAV("src/hit.wav"); // Load hit sound effect
 
     // Frame rate variables
     int frameCount = 0;
