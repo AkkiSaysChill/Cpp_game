@@ -31,6 +31,8 @@ To compile the game, execute the following command in your terminal:
  g++ main.cpp physics.cpp enemy/Enemy.cpp -o main -lSDL2 -lSDL2_gfx -lSDL2_mixer
  ```
 
+## How the Game looks like
+![Untitled video - Made with Clipchamp](https://github.com/Akkislinuxstuff/Cpp_game/assets/97971429/89bbece9-6ddf-4ba2-96de-567b91f326ff)
 
 ### Get Involved
 I welcome contributions from the community! If you're interested in game development or have ideas to share, feel free to reach out.
