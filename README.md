@@ -2,7 +2,9 @@
 
 ## Introduction
 Welcome to my game development learning project! I am learning game development using C++ programming language and the SDL2 library. While the game is still in the development phase, we're excited to share our progress with you. this game is a clone of the famous game Space Invaders
+
 ![Space Invaders](https://tenor.com/view/space-invaders-gif-27381811)
+
 
 
 
