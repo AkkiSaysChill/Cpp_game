@@ -3,7 +3,7 @@
 ## Introduction
 Welcome to my game development learning project! I am learning game development using C++ programming language and the SDL2 library. While the game is still in the development phase, we're excited to share our progress with you. this game is a clone of the famous game Space Invaders
 
-![Space Invaders](https://media.tenor.com/images/4b3066e92eef40e12283ac8c7487a2cb/tenor.gif)
+![SpaceInvaders-Gameplay](https://github.com/Akkislinuxstuff/Cpp_game/assets/97971429/651f2eeb-1d98-47ab-96d1-ece4aa21cb89)
 
 
 
@@ -31,6 +31,8 @@ To compile the game, execute the following command in your terminal:
  g++ main.cpp physics.cpp enemy/Enemy.cpp -o main -lSDL2 -lSDL2_gfx -lSDL2_mixer
  ```
 
+## How the Game looks like
+![Untitled video - Made with Clipchamp](https://github.com/Akkislinuxstuff/Cpp_game/assets/97971429/89bbece9-6ddf-4ba2-96de-567b91f326ff)
 
 ### Get Involved
 I welcome contributions from the community! If you're interested in game development or have ideas to share, feel free to reach out.
