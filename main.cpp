@@ -61,6 +61,8 @@ int WinMain() {
     // Load sound effects
     Mix_Chunk* fireSound = Mix_LoadWAV("src/shoot.wav"); // Load fire sound effect
     Mix_Chunk* hitSound = Mix_LoadWAV("src/hit.wav"); // Load hit sound effect
+    Mix_Chunk* jumpSound = Mix_LoadWAV("src/jump.wav"); // Load jump sound effect
+
 
     // Frame rate variables
     int frameCount = 0;
@@ -87,6 +89,7 @@ int WinMain() {
                         if (!isJumping && circleY == 560 ) {
                             physics.setVelocityY(JUMP_VELOCITY);
                             isJumping = true;
+                            Mix_PlayChannel(-1, jumpSound, 0);
                         }
                         break;
                     case SDLK_LCTRL:
@@ -139,19 +142,23 @@ int WinMain() {
                 projectile.active = false;
             } else {
                 // Check for collision with each enemy
+
                 for (auto& enemy : enemies) {
-                    float dx = projectile.x - enemy.getX();
-                    float dy = projectile.y - enemy.getY();
-                    float distance = std::sqrt(dx * dx + dy * dy);
-                    if (distance < CIRCLE_RADIUS + enemy.getRadius()) {
-                        // Handle collision
-                        enemy.hit();
-                        // Deactivate the projectile
-                        std::cout << "Ouch!";
-                        shooting = false;
-                        projectile.active = false;
-                        Mix_PlayChannel(-1, hitSound, 0);
-                        break; // Exit the loop since the projectile can only hit one enemy at a time
+                    if (enemy.renderEnabled) {
+                        // std::cout << "hehe";
+                        float dx = projectile.x - enemy.getX();
+                        float dy = projectile.y - enemy.getY();
+                        float distance = std::sqrt(dx * dx + dy * dy);
+                        if (distance < CIRCLE_RADIUS + enemy.getRadius()) {
+                            // Handle collision
+                            enemy.hit();
+                            // Deactivate the projectile
+                            std::cout << "Ouch!";
+                            shooting = false;
+                            projectile.active = false;
+                            Mix_PlayChannel(-1, hitSound, 0);
+                            break; // Exit the loop since the projectile can only hit one enemy at a time
+                        }           
                     }
                 }
             }
@@ -162,10 +169,13 @@ int WinMain() {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
+        
         for (auto& enemy : enemies) {
             enemy.update();
             enemy.render(renderer);
         }
+        
+
 
         // Render the filled circle for the player
         renderFillCircle(renderer, static_cast<int>(circleX), static_cast<int>(circleY), CIRCLE_RADIUS, {255, 255, 255}); // White color
