@@ -57,5 +57,5 @@ void Enemy::destory() {
     Mix_PlayChannel(-1, explode, 0);
     std::cout << "die" << std::endl;
 
-    delete this;
+    
 }

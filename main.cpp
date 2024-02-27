@@ -55,8 +55,25 @@ int WinMain() {
 
     Projectile projectile;
 
+    // creates enemy
     std::vector<Enemy> enemies;
-    enemies.push_back(Enemy(100, 100)); // Example enemy creation
+    ////////////////// first row ////////////////
+    enemies.push_back(Enemy(/* x axis */100, /* y axis */ 100));
+    enemies.push_back(Enemy(200, 100));
+    enemies.push_back(Enemy(300, 100));
+    enemies.push_back(Enemy(400, 100));
+    enemies.push_back(Enemy(500, 100));
+    enemies.push_back(Enemy(600, 100));
+    enemies.push_back(Enemy(700, 100));
+    
+    //////////////// second row ///////////////
+    enemies.push_back(Enemy(100, 200));
+    enemies.push_back(Enemy(200, 200));
+    enemies.push_back(Enemy(300, 200));
+    enemies.push_back(Enemy(400, 200));
+    enemies.push_back(Enemy(500, 200));
+    enemies.push_back(Enemy(600, 200));
+    enemies.push_back(Enemy(700, 200));
 
     // Load sound effects
     Mix_Chunk* fireSound = Mix_LoadWAV("src/shoot.wav"); // Load fire sound effect
@@ -174,7 +191,7 @@ int WinMain() {
             enemy.update();
             enemy.render(renderer);
         }
-        
+
 
 
         // Render the filled circle for the player
