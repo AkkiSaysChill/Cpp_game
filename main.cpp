@@ -8,6 +8,7 @@
 #include <thread>
 #include "enemy/Enemy.h"
 #include <vector>
+#include <algorithm>
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -187,10 +188,17 @@ int WinMain() {
         SDL_RenderClear(renderer);
 
         
-        for (auto& enemy : enemies) {
-            enemy.update();
-            enemy.render(renderer);
-        }
+        
+// Remove enemies with health less than or equal to -100
+enemies.erase(std::remove_if(enemies.begin(), enemies.end(), [](const Enemy& enemy) {
+    return enemy.getHealth() <= -100;
+}), enemies.end());
+
+// Iterate over remaining enemies and update/render them
+for (auto& enemy : enemies) {
+    enemy.update();
+    enemy.render(renderer);
+}
 
 
 
