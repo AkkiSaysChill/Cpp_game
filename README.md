@@ -34,7 +34,7 @@ To compile the game, execute the following command in your terminal:
 ## How the Game looks like
 ![cpp_game](https://github.com/AkkiSaysChill/Cpp_game/assets/97971429/fd20577f-f2c8-42dc-a668-65e7e112db11)
 
-## ### Controls
+### Controls
 
 - **Move Left**: Left Arrow
 - **Move Right**: Right Arrow
