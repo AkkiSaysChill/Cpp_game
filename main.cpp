@@ -34,6 +34,11 @@ void renderFillCircle(SDL_Renderer* renderer, int centerX, int centerY, int radi
 }
 
 int WinMain() {
+
+    std::cout << "###########################################################";
+    std::cout << "############### Made by AkkiSaysChill #####################";
+    std::cout << "###########################################################";
+
     SDL_Init(SDL_INIT_VIDEO);
 
     SDL_Window* window = SDL_CreateWindow("game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
@@ -50,7 +55,7 @@ int WinMain() {
     bool isJumping = false;
 
     float circleX = SCREEN_WIDTH / 2.0f;
-    float circleY = SCREEN_HEIGHT - CIRCLE_RADIUS;  // Set the initial position to the bottom
+    float circleY = SCREEN_HEIGHT  - CIRCLE_RADIUS;  // Set the initial position to the bottom
 
     Physics physics;
 

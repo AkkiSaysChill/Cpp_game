@@ -77,5 +77,4 @@ void Enemy::destory() {
     Mix_PlayChannel(-1, explode, 0);
     std::cout << "die" << std::endl;
 
-    Mix_FreeChunk(explode); // Free memory allocated for the sound effect
 }
