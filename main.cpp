@@ -35,9 +35,9 @@ void renderFillCircle(SDL_Renderer* renderer, int centerX, int centerY, int radi
 
 int WinMain() {
 
-    std::cout << "###########################################################";
-    std::cout << "############### Made by AkkiSaysChill #####################";
-    std::cout << "###########################################################";
+    std::cout << "###########################################################" << std::endl;
+    std::cout << "############### Made by AkkiSaysChill #####################" << std::endl;
+    std::cout << "###########################################################" << std::endl;
 
     SDL_Init(SDL_INIT_VIDEO);
 
