@@ -33,7 +33,7 @@ void renderFillCircle(SDL_Renderer* renderer, int centerX, int centerY, int radi
     filledCircleColor(renderer, centerX, centerY, radius, SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888), color.r, color.g, color.b));
 }
 
-int WinMain() {
+int main() {
 
     std::cout << "###########################################################" << std::endl;
     std::cout << "############### Made by AkkiSaysChill #####################" << std::endl;
